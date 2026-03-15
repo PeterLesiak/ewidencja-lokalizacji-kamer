@@ -30,27 +30,32 @@ CREATE TABLE addresses (
   apartment_number VARCHAR(10)
 );
 
-CREATE TABLE administrators (
+CREATE TABLE inf_administrators (
   id           INT PRIMARY KEY AUTO_INCREMENT,
   updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
   first_name   VARCHAR(255) NOT NULL,
   last_name    VARCHAR(255) NOT NULL,
   phone_number CHAR(9) NOT NULL,
-  organization VARCHAR(255) NOT NULL
+  organization VARCHAR(255),
+  NIP          CHAR(11),
+  notice       TEXT,
+
+  address      INT NOT NULL,
+  CONSTRAINT fk_inf_administrators_address FOREIGN KEY (address) REFERENCES addresses(id)
 );
 
 CREATE TABLE infrastructures (
-  id            INT PRIMARY KEY AUTO_INCREMENT,
-  updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  id                INT PRIMARY KEY AUTO_INCREMENT,
+  updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
-  latitude      DECIMAL(10, 8) NOT NULL,
-  longitude     DECIMAL(11, 8) NOT NULL,
-  object_type   TEXT NOT NULL,
+  latitude          DECIMAL(10, 8) NOT NULL,
+  longitude         DECIMAL(11, 8) NOT NULL,
+  object_type       TEXT NOT NULL,
 
-  administrator INT NOT NULL,
-  CONSTRAINT fk_infrastructures_administrator FOREIGN KEY (administrator) REFERENCES administrators(id),
-  address       INT,
+  inf_administrator INT NOT NULL,
+  CONSTRAINT fk_infrastructures_inf_administrator FOREIGN KEY (inf_administrator) REFERENCES inf_administrators(id),
+  address           INT,
   CONSTRAINT fk_infrastructures_address FOREIGN KEY (address) REFERENCES addresses(id)
 );
 
@@ -60,6 +65,7 @@ CREATE TABLE cameras (
 
   camera_type          VARCHAR(255) NOT NULL,
   installation_date    DATE NOT NULL,
+  storage_duration     INT NOT NULL,
   location_description TEXT,
   coverage_area        TEXT,
 
