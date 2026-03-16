@@ -1,6 +1,6 @@
 import { defineConfig } from 'drizzle-kit';
-import { pathToFileURL } from 'node:url';
-import { join } from 'node:path';
+
+import { databaseURL } from './src/db';
 
 export default defineConfig({
   dialect: 'sqlite',
@@ -8,6 +8,6 @@ export default defineConfig({
   out: './src/db/migrations',
   casing: 'snake_case',
   dbCredentials: {
-    url: pathToFileURL(join(process.cwd(), './database/sqlite.db')).toString(),
+    url: databaseURL.toString(),
   },
 });

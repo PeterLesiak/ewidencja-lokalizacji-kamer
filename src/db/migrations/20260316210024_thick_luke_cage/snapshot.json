@@ -1,7 +1,7 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "04227b3b-61b9-48cb-9989-8c3f61103d92",
+  "id": "8664323c-ce3c-43ba-8d9c-a5b12fb7b39f",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
@@ -24,6 +24,10 @@
     },
     {
       "name": "roles",
+      "entityType": "tables"
+    },
+    {
+      "name": "sessions",
       "entityType": "tables"
     },
     {
@@ -331,6 +335,36 @@
       "table": "roles"
     },
     {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "entityType": "columns",
+      "table": "sessions"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "user_id",
+      "entityType": "columns",
+      "table": "sessions"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "expires_at",
+      "entityType": "columns",
+      "table": "sessions"
+    },
+    {
       "type": "integer",
       "notNull": false,
       "autoincrement": true,
@@ -452,6 +486,21 @@
     },
     {
       "columns": [
+        "user_id"
+      ],
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "NO ACTION",
+      "nameExplicit": false,
+      "name": "fk_sessions_user_id_users_id_fk",
+      "entityType": "fks",
+      "table": "sessions"
+    },
+    {
+      "columns": [
         "role_id"
       ],
       "tableTo": "roles",
@@ -515,9 +564,36 @@
         "id"
       ],
       "nameExplicit": false,
+      "name": "sessions_pk",
+      "table": "sessions",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
       "name": "users_pk",
       "table": "users",
       "entityType": "pks"
+    },
+    {
+      "columns": [
+        "name"
+      ],
+      "nameExplicit": false,
+      "name": "roles_name_unique",
+      "entityType": "uniques",
+      "table": "roles"
+    },
+    {
+      "columns": [
+        "login"
+      ],
+      "nameExplicit": false,
+      "name": "users_login_unique",
+      "entityType": "uniques",
+      "table": "users"
     }
   ],
   "renames": []

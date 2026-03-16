@@ -3,23 +3,26 @@ import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
 
 export const roles = sqliteTable('roles', {
   id: integer({ mode: 'number' }).primaryKey({ autoIncrement: true }),
-
-  name: text().notNull(),
+  name: text().notNull().unique(),
 });
 
 export const users = sqliteTable('users', {
   id: integer({ mode: 'number' }).primaryKey({ autoIncrement: true }),
-
   firstName: text().notNull(),
   lastName: text().notNull(),
-  login: text().notNull(),
+  login: text().notNull().unique(),
   password: text().notNull(),
   roleId: integer({ mode: 'number' }).references(() => roles.id),
 });
 
+export const sessions = sqliteTable('sessions', {
+  id: text().primaryKey(),
+  userId: integer({ mode: 'number' }).references(() => users.id),
+  expiresAt: integer({ mode: 'number' }).notNull(),
+});
+
 export const addresses = sqliteTable('addresses', {
   id: integer({ mode: 'number' }).primaryKey({ autoIncrement: true }),
-
   country: text().notNull(),
   city: text().notNull(),
   postalCode: text().notNull(),
@@ -30,7 +33,6 @@ export const addresses = sqliteTable('addresses', {
 
 export const infAdministrators = sqliteTable('inf_administrators', {
   id: integer({ mode: 'number' }).primaryKey({ autoIncrement: true }),
-
   firstName: text().notNull(),
   lastName: text().notNull(),
   phoneNumber: text().notNull(),
@@ -42,7 +44,6 @@ export const infAdministrators = sqliteTable('inf_administrators', {
 
 export const infrastructures = sqliteTable('infrastructures', {
   id: integer({ mode: 'number' }).primaryKey({ autoIncrement: true }),
-
   latitude: real().notNull(),
   longitude: real().notNull(),
   objectType: text().notNull(),
@@ -52,7 +53,6 @@ export const infrastructures = sqliteTable('infrastructures', {
 
 export const cameras = sqliteTable('cameras', {
   id: integer({ mode: 'number' }).primaryKey({ autoIncrement: true }),
-
   cameraType: text().notNull(),
   installationDate: text().notNull(),
   storageDuration: integer({ mode: 'number' }).notNull(),
@@ -62,7 +62,7 @@ export const cameras = sqliteTable('cameras', {
 });
 
 export const relations = defineRelations(
-  { roles, users, addresses, infAdministrators, infrastructures, cameras },
+  { roles, users, sessions, addresses, infAdministrators, infrastructures, cameras },
   r => ({
     roles: {
       users: r.many.users(),
@@ -73,6 +73,14 @@ export const relations = defineRelations(
         from: r.users.roleId,
         to: r.roles.id,
         optional: false,
+      }),
+    },
+
+    sessions: {
+      user: r.one.users({
+        from: r.sessions.userId,
+        to: r.users.id,
+        optional: true,
       }),
     },
 
