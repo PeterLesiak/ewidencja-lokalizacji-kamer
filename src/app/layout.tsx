@@ -9,11 +9,11 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Authorization } from '@/components/authorization';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { composeWrappers } from '@/lib/compose-wrappers';
+import { QueryClientProvider } from '@/lib/query-client-provider';
 import { cn } from '@/lib/utils';
 import './globals.css';
 
 const notoSans = Roboto({ variable: '--font-sans' });
-
 const fontMono = Geist_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export default function RootLayout({ children }: PropsWithChildren) {
@@ -21,6 +21,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     props => <NavigationBlockerProvider {...props} />,
     props => <ThemeProvider {...props} />,
     props => <TooltipProvider {...props} />,
+    props => <QueryClientProvider {...props} />,
     props => <Authorization {...props} />,
     props => (
       <SidebarProvider
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <body>
         <StackedProvider>
           <AppSidebar />
+
           <SidebarInset>
             <SiteHeader />
 

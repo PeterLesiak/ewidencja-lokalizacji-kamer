@@ -50,17 +50,18 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import logout from '@/actions/logout';
+import { useUser } from '@/hooks/use-user';
+import { useHasAdminRole } from '@/hooks/use-has-admin-role';
 
 export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
   const { setOpenMobile, isMobile } = useSidebar();
+  const { data: user } = useUser();
+  const { data: hasAdminRole } = useHasAdminRole();
 
-  const user = {
-    avatar: 'https://ui.shadcn.com/avatars/shadcn.jpg',
-    login: 'lesiak.piotr.167',
-    firstName: 'Piotr',
-    lastName: 'Lesiak',
-  };
+  const userAvatar = 'https://ui.shadcn.com/avatars/shadcn.jpg';
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -158,34 +159,36 @@ export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>
-            <span>Admin Tools</span>
-            <Badge className="ml-auto bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300">
-              Requires admin
-            </Badge>
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <Link href="/users" onClick={() => setOpenMobile(false)}>
-                  <SidebarMenuButton>
-                    <ShieldUserIcon />
-                    <span>Manage Users</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Link href="/logs" onClick={() => setOpenMobile(false)}>
-                  <SidebarMenuButton>
-                    <LibraryBigIcon />
-                    <span>Inspect Logs</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {hasAdminRole ? (
+          <SidebarGroup>
+            <SidebarGroupLabel>
+              <span>Admin Tools</span>
+              <Badge className="ml-auto bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300">
+                Requires admin
+              </Badge>
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <Link href="/users" onClick={() => setOpenMobile(false)}>
+                    <SidebarMenuButton>
+                      <ShieldUserIcon />
+                      <span>Manage Users</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/logs" onClick={() => setOpenMobile(false)}>
+                    <SidebarMenuButton>
+                      <LibraryBigIcon />
+                      <span>Inspect Logs</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ) : null}
 
         <SidebarGroup className="mt-auto">
           <SidebarGroupLabel>Support</SidebarGroupLabel>
@@ -219,69 +222,78 @@ export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={user.avatar} alt={user.firstName} />
+                      <AvatarImage src={userAvatar} alt={user?.firstName} />
                       <AvatarFallback className="rounded-lg">
-                        {user.firstName[0]}
-                        {user.lastName[0]}
+                        {user?.firstName[0]}
+                        {user?.lastName[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">
-                        {user.firstName} {user.lastName}
-                      </span>
-                      <span className="truncate text-xs text-muted-foreground">
-                        {user.login}
-                      </span>
+                      {user ? (
+                        <>
+                          <span className="truncate font-medium">
+                            {user.firstName} {user.lastName}
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {user.login}
+                          </span>
+                        </>
+                      ) : (
+                        <Skeleton className="h-8" />
+                      )}
                     </div>
                     <EllipsisIcon className="ml-auto size-4" />
                   </SidebarMenuButton>
                 }
               />
-              <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                side={isMobile ? 'bottom' : 'right'}
-                align="end"
-                sideOffset={4}
-              >
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="p-0 font-normal">
-                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                      <Avatar className="h-8 w-8 rounded-lg">
-                        <AvatarImage src={user.avatar} alt={user.firstName} />
-                        <AvatarFallback className="rounded-lg">
-                          {user.firstName[0]} {user.lastName[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="grid flex-1 text-left text-sm leading-tight">
-                        <span className="truncate font-medium">
-                          {user.firstName} {user.lastName}
-                        </span>
-                        <span className="truncate text-xs text-muted-foreground">
-                          {user.login}
-                        </span>
+              {user ? (
+                <DropdownMenuContent
+                  className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                  side={isMobile ? 'bottom' : 'right'}
+                  align="end"
+                  sideOffset={4}
+                >
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="p-0 font-normal">
+                      <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                        <Avatar className="h-8 w-8 rounded-lg">
+                          <AvatarImage src={userAvatar} alt={user.firstName} />
+                          <AvatarFallback className="rounded-lg">
+                            {user.firstName[0]}
+                            {user.lastName[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          <span className="truncate font-medium">
+                            {user.firstName} {user.lastName}
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {user.login}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </DropdownMenuLabel>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <Link href="/account" onClick={() => setOpenMobile(false)}>
+                    </DropdownMenuLabel>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <Link href="/account" onClick={() => setOpenMobile(false)}>
+                      <DropdownMenuItem>
+                        <CircleUserIcon />
+                        Account
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem>
-                      <CircleUserIcon />
-                      Account
+                      <MessageCircleMoreIcon />
+                      Notifications
                     </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuItem>
-                    <MessageCircleMoreIcon />
-                    Notifications
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="destructive" onClick={logout}>
+                    <LogOutIcon />
+                    Log out
                   </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
-                  <LogOutIcon />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+                </DropdownMenuContent>
+              ) : null}
             </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
