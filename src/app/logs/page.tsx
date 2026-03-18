@@ -1,11 +1,11 @@
 import { redirect } from 'next/navigation';
 
-import { getUser } from '@/lib/dal';
+import { caller } from '@/trpc/server';
 
 export default async function Page() {
-  const user = await getUser();
+  const isAdmin = await caller.isAdmin();
 
-  if (!user || user.role.name !== 'admin') {
+  if (!isAdmin) {
     redirect('/');
   }
 

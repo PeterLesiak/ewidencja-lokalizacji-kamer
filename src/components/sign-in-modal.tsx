@@ -22,9 +22,9 @@ import {
   InputGroupInput,
 } from '@/components/ui/input-group';
 import { Button } from '@/components/ui/button';
+import { useAuthActions } from '@/hooks/use-auth-actions';
 import { useIsMobile } from '@/hooks/use-mobile';
-import signIn from '@/actions/sign-in';
-import { signInSchema } from '@/lib/sign-in';
+import { signInSchema } from '@/lib/schemas';
 
 export function SignInModal({ children }: PropsWithChildren) {
   const [open, setOpen] = useState(true);
@@ -69,14 +69,10 @@ function SignInForm({ close, ...props }: ComponentProps<'form'> & { close: () =>
     defaultValues: { login: '', password: '' },
   });
 
+  const { signIn } = useAuthActions();
+
   async function onSubmit(data: z.infer<typeof signInSchema>) {
-    const formData = new FormData();
-
-    for (const [key, value] of Object.entries(data)) {
-      formData.set(key, value);
-    }
-
-    const state = await signIn(formData);
+    const state = await signIn(data);
 
     if (state === undefined) {
       return close();

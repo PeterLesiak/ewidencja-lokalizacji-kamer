@@ -1,12 +1,12 @@
 import { PropsWithChildren } from 'react';
 
-import { isSignedIn } from '@/lib/auth';
+import { getUser } from '@/lib/auth';
 import { SignInModal } from './sign-in-modal';
 
 export async function Authorization({ children }: PropsWithChildren) {
-  const signedIn = await isSignedIn();
+  const user = await getUser();
 
-  if (signedIn) {
+  if (user) {
     return children;
   }
 

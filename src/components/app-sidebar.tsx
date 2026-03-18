@@ -1,6 +1,7 @@
 'use client';
 
 import type { ComponentProps } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   CctvIcon,
   ChartNoAxesCombinedIcon,
@@ -52,14 +53,16 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import logout from '@/actions/logout';
-import { useUser } from '@/hooks/use-user';
-import { useHasAdminRole } from '@/hooks/use-has-admin-role';
+import { useAuthActions } from '@/hooks/use-auth-actions';
+import { useTRPC } from '@/trpc/client';
 
 export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
   const { setOpenMobile, isMobile } = useSidebar();
-  const { data: user } = useUser();
-  const { data: hasAdminRole } = useHasAdminRole();
+  const { logout } = useAuthActions();
+
+  const trpc = useTRPC();
+  const { data: user } = useQuery(trpc.getUser.queryOptions());
+  const { data: isAdmin } = useQuery(trpc.isAdmin.queryOptions());
 
   const userAvatar = 'https://ui.shadcn.com/avatars/shadcn.jpg';
 
@@ -159,7 +162,7 @@ export function AppSidebar(props: ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {hasAdminRole ? (
+        {isAdmin ? (
           <SidebarGroup>
             <SidebarGroupLabel>
               <span>Admin Tools</span>

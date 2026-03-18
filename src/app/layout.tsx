@@ -8,8 +8,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Authorization } from '@/components/authorization';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { TRPCReactProvider } from '@/trpc/client';
 import { composeWrappers } from '@/lib/compose-wrappers';
-import { QueryClientProvider } from '@/lib/query-client-provider';
 import { cn } from '@/lib/utils';
 import './globals.css';
 
@@ -18,10 +18,10 @@ const fontMono = Geist_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export default function RootLayout({ children }: PropsWithChildren) {
   const StackedProvider = composeWrappers([
+    props => <TRPCReactProvider {...props} />,
     props => <NavigationBlockerProvider {...props} />,
     props => <ThemeProvider {...props} />,
     props => <TooltipProvider {...props} />,
-    props => <QueryClientProvider {...props} />,
     props => <Authorization {...props} />,
     props => (
       <SidebarProvider
